@@ -1,0 +1,374 @@
+{% extends 'base.html' %} 
+
+{% load static %}
+
+{% block content %}
+<section class="main-content">
+  <!-- Lateral esquerda -->
+  <aside class="left-side">
+    <div class="ad-slot ad-sticky" aria-label="Publicidade lateral esquerda"></div>
+    <div class="ad-slot ad-sticky" aria-label="Publicidade lateral esquerda"></div>
+  </aside>
+
+  <!-- Cabeçalho da ferramenta (na coluna central) -->
+  <section class="tool-header" aria-labelledby="tool-title">
+    <h1 id="tool-title">Conversor de Imagens Online</h1>
+
+    <div class="info-wrapper">
+      <p>Converta uma ou várias imagens para qualquer formato que você quiser.</p>
+      <p>Selecione ou arraste a(s) imagem(s) para o campo abaixo.</p>
+      <p>Defina o formato desejado na caixa “Formato de saída” e clique em “Converter”.</p>
+
+      <div class="supported-formats" aria-label="Formatos suportados">
+        <span>Converta para:</span>
+        <ul>
+          <li><a href="#">BMP</a>,</li>
+          <li><a href="#">EPS</a>,</li>
+          <li><a href="#">GIF</a>,</li>
+          <li><a href="#">ICO</a>,</li>
+          <li><a href="#">IM</a>,</li>
+          <li><a href="#">JPEG/JFIF</a>,</li>
+          <li><a href="#">PCX</a>,</li>
+          <li><a href="#">PNG</a>,</li>
+          <li><a href="#">TIFF</a>,</li>
+          <li><a href="#">WebP</a>,</li>
+          <li><a href="#">e mais...</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Live stats (modo demo por padrão; trocar data-mode="real" ao ligar no backend) -->
+    <div
+      class="live-stats"
+      id="liveStats"
+      data-mode="demo"
+      data-start="128340"
+      aria-live="polite"
+    >
+      <span class="live-stats__dot" aria-hidden="true"></span>
+      <strong><span id="convTotal">128.340</span> conversões concluídas</strong>
+      <span class="live-stats__sep">·</span>
+      <span id="convNow">atualizando…</span>
+      <span class="live-stats__note" id="statsNote">(exemplo)</span>
+    </div>
+  </section>
+
+  <!-- Coluna central: formulário + SEO + anúncios inline -->
+  <div class="content-wrapper">
+    <form method="POST" enctype="multipart/form-data" id="convert-form">
+      {% csrf_token %}
+
+      <div class="file-wrapper">
+        <!-- Card para upload de imagens -->
+        <div class="file-upload-card" aria-label="Área para soltar ou enviar imagens">
+          <span>Solte a imagem aqui</span>
+
+          <button type="button" id="btn-upload" class="btn-upload">Fazer upload</button>
+          <span id="files-info" aria-live="polite"></span>
+
+          <input
+            type="file"
+            id="file-input"
+            name="arquivos"
+            accept=".png,.jpg,.jpeg,.webp,.tif,.tiff,image/png,image/jpeg,image/webp,image/tiff"
+            multiple
+            hidden
+          />
+        </div>
+
+        <!-- Galeria de miniaturas -->
+        <div class="thumbs-carousel" id="thumbsCarousel" aria-label="Imagens selecionadas">
+          <div class="thumbs-viewport" id="thumbsViewport">
+            <div class="thumbs-track" id="thumbsTrack" aria-live="polite"></div>
+          </div>
+        </div>
+
+        <!-- Dropdown para formato de saída -->
+        <div class="output-format">
+          <label for="format" class="field-label">Formato de saída</label>
+
+          <div class="select-wrapper" data-max-visible="6" style="--option-h: 44px;">
+            <!-- select nativo (fica oculto, mas envia valor no form) -->
+            <select id="format" name="format" required>
+              <option value="">Selecione uma opção</option>
+              {% for image_format in image_formats %}
+                <option value="{{ image_format.acronym|lower }}">
+                  {{ image_format.acronym }} ({{ image_format.file_extension }}) - {{ image_format.format_name }} ({{ image_format.description|truncatechars:20 }})
+                </option>
+              {% empty %}
+                Nenhum formato de imagem disponível para conversão
+              {% endfor %}
+            </select>
+
+            <!-- controle visual (manipulado via JS) -->
+            <button type="button" class="select-display" aria-haspopup="listbox" aria-expanded="false" aria-controls="format">
+              <span class="select-display__value">Selecione uma opção</span>
+              <i class="ph ph-caret-down" aria-hidden="true"></i>
+            </button>
+
+            <!-- menu de opções (preenchido via JS a partir do <select>) -->
+            <ul class="select-menu" role="listbox" tabindex="-1" aria-labelledby="format"></ul>
+          </div>
+        </div>
+
+        <button class="btn-convert" type="submit">
+          Converter
+          <i class="ph ph-arrows-clockwise" aria-hidden="true"></i>
+        </button>
+      </div>
+    </form>
+
+    <!-- Anúncio inline (discreto) abaixo do botão -->
+    <div class="ad-slot ad-inline" aria-label="Publicidade abaixo do botão">
+      <span class="ad-inline-text">728×90 / 468×60 / 320×100</span>
+    </div>
+
+    <!-- ====== SEO Copy adicional (não interfere no funcionamento) ====== -->
+    <div class="seo-content container" aria-label="Conteúdo informativo">
+      <h2>Converter imagens online com qualidade e rapidez</h2>
+      <p>
+        Nosso conversor de imagens online gratuito suporta <strong>PNG, JPEG, WebP, TIFF, BMP, GIF</strong> e muitos outros formatos.
+        Faça conversões em lote, otimize o tamanho dos arquivos e preserve a nitidez para uso em <strong>sites, redes sociais, e-commerce, documentos e impressão profissional</strong>.
+      </p>
+
+      <!-- Anúncio inline -->
+      <div class="ad-slot ad-inline" aria-label="Publicidade abaixo do parágrafo">
+        <span class="ad-inline-text">728×90 / 468×60 / 320×100</span>
+      </div>
+
+      <h3>Principais formatos de imagem e quando utilizá-los</h3>
+      <p>
+        Cada formato de imagem tem características próprias que podem ser mais vantajosas dependendo da finalidade. Confira abaixo as recomendações para escolher o formato ideal:
+      </p>
+
+      <h4>📌 PNG (Portable Network Graphics)</h4>
+      <p>
+        Ideal para <strong>imagens com fundo transparente</strong>, como logotipos e ícones. O formato PNG preserva a qualidade e suporta compressão sem perda, mas gera arquivos maiores em comparação ao JPEG.
+      </p>
+
+      <!-- Anúncio inline -->
+      <div class="ad-slot ad-inline" aria-label="Publicidade abaixo da seção PNG">
+        <span class="ad-inline-text">728×90 / 468×60 / 320×100</span>
+      </div>
+
+      <h4>📌 JPEG / JPG</h4>
+      <p>
+        O formato mais popular para fotos e imagens da web. Oferece boa <strong>compressão com perda controlada</strong>, permitindo reduzir o tamanho sem perder muita qualidade. Recomendado para redes sociais, sites e envio por e-mail.
+      </p>
+
+      <h4>📌 WebP</h4>
+      <p>
+        Criado pelo Google, combina o melhor dos dois mundos: <strong>alta compressão e suporte a transparência</strong>. É indicado para sites e lojas virtuais que buscam carregamento mais rápido sem sacrificar qualidade.
+      </p>
+
+      <!-- Anúncio inline -->
+      <div class="ad-slot ad-inline" aria-label="Publicidade abaixo da seção WebP">
+        <span class="ad-inline-text">728×90 / 468×60 / 320×100</span>
+      </div>
+
+      <h4>📌 TIFF</h4>
+      <p>
+        Muito utilizado em <strong>impressões de alta qualidade e fotografia profissional</strong>. Suporta várias camadas e compressão sem perdas, sendo ideal para gráficas e edição avançada.
+      </p>
+
+      <h4>📌 BMP</h4>
+      <p>
+        Um dos formatos mais antigos, usado principalmente em sistemas Windows. Não possui compressão, por isso os arquivos costumam ser grandes. É pouco usado atualmente, mas útil em casos específicos de compatibilidade.
+      </p>
+
+      <!-- Anúncio inline -->
+      <div class="ad-slot ad-inline" aria-label="Publicidade abaixo da seção BMP">
+        <span class="ad-inline-text">728×90 / 468×60 / 320×100</span>
+      </div>
+
+      <h4>📌 GIF</h4>
+      <p>
+        Popular para <strong>animações curtas e gráficos simples</strong>. Suporta transparência, mas não alcança a qualidade do PNG. É muito utilizado em redes sociais e mensagens instantâneas.
+      </p>
+
+      <h3>Por que usar este conversor?</h3>
+      <ul>
+        <li>✅ Suporte a diversos formatos e conversão múltipla;</li>
+        <li>✅ Interface simples: arraste, escolha o formato e converta;</li>
+        <li>✅ Compatível com navegadores modernos, sem instalar nada;</li>
+        <li>✅ 100% online e gratuito, sem limite de uso.</li>
+      </ul>
+
+      <!-- Anúncio inline -->
+      <div class="ad-slot ad-inline" aria-label="Publicidade abaixo da lista de vantagens">
+        <span class="ad-inline-text">728×90 / 468×60 / 320×100</span>
+      </div>
+
+      <h3>Perguntas frequentes</h3>
+      <dl>
+        <dt>Quais formatos de imagem são aceitos?</dt>
+        <dd>PNG, JPG/JPEG, WebP, TIFF, BMP, GIF, entre outros.</dd>
+        <dt>Posso converter várias imagens de uma vez?</dt>
+        <dd>Sim, basta selecionar múltiplos arquivos ou arrastá-los para a área indicada.</dd>
+        <dt>A conversão é gratuita?</dt>
+        <dd>Sim, você pode utilizar a ferramenta gratuitamente e sem limite de vezes.</dd>
+        <dt>Preciso instalar algum programa?</dt>
+        <dd>Não, a conversão acontece diretamente no navegador, sem precisar baixar softwares.</dd>
+      </dl>
+    </div>
+    
+    <!-- Anúncio inline (discreto) abaixo do texto -->
+    <div class="ad-slot ad-inline" aria-label="Publicidade abaixo do texto">
+      <span class="ad-inline-text">728×90 / 468×60 / 320×100</span>
+    </div>
+  </div>
+
+  <!-- Lateral direita -->
+  <aside class="right-side">
+    <div class="ad-slot ad-sticky" aria-label="Publicidade lateral direita"></div>
+    <div class="ad-slot ad-sticky" aria-label="Publicidade lateral direita"></div>
+  </aside>
+</section>
+
+<!-- Popup de propaganda (flutuante, canto inferior direito) -->
+<div class="ad-popup" id="adPopup" role="complementary" aria-label="Publicidade flutuante">
+  <div class="ad-popup__inner">
+    <button type="button" class="ad-popup__close" aria-label="Fechar anúncio">×</button>
+    <div class="ad-slot ad-square" aria-label="Placeholder de propaganda"></div>
+  </div>
+</div>
+
+<!-- Modal: Selecionar pasta de destino -->
+<div class="modal" id="modal-pasta" aria-hidden="true">
+  <div class="modal-backdrop" data-close-modal></div>
+  <div class="modal-dialog" role="dialog" aria-modal="true" aria-labelledby="modal-pasta-title">
+    <h3 id="modal-pasta-title">Escolha a pasta para salvar</h3>
+    <p>Selecione sua pasta <strong>Downloads</strong> (ou outra de sua preferência). Criaremos/usararemos a subpasta <code>ConverteTudo</code> automaticamente.</p>
+    <div class="modal-actions">
+      <button type="button" class="btn" id="btn-escolher-pasta">Escolher pasta…</button>
+      <button type="button" class="btn btn-ghost" data-close-modal>Cancelar</button>
+    </div>
+    <p class="modal-note">Dica: navegadores baseados em Chromium (Chrome/Edge/Brave/Opera) suportam salvar direto na pasta. Em outros navegadores faremos download automático de cada arquivo.</p>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script defer src="{% static 'conversor/js/live-stats.js' %}"></script>
+<script src="{% static 'conversor/js/formats-dropdown.js' %}"></script>
+<script defer src="{% static 'conversor/js/uploader-thumbs.js' %}"></script>
+
+<script>
+  // ===== Exposição de config global usada pelo converter-batch.js
+  window.CT_PROCESS_URL = "{% url 'images:process' %}";
+  window.CT_LIMIT_BYTES = {{ UPLOAD_LIMIT_BYTES|default:524288000 }};  // Ex.: 500 MB (free hoje)
+  window.CT_LIMIT_FILES = {{ UPLOAD_LIMIT_FILES|default:300 }};        // Ex.: 300 arquivos (free hoje)
+  window.CT_UPGRADE_URL = "{{ UPGRADE_URL|default:'/premium' }}";
+  // Plano do usuário (opcional): use no server para injetar o plano real
+  window.CT_USER_PLAN = window.CT_USER_PLAN || "{{ user_plan|default:'Free' }}";
+
+  // ===== Modal Premium elegante (usa styles.css)
+  (function ensurePremiumModal(){
+    window.CT = window.CT || {};
+
+    // NÃO injeta CSS aqui. O visual vem de styles.css
+    function buildPremiumModal({ plan='free', title='Upgrade necessário', messageHtml='', upgradeUrl='/premium' }){
+      // Contêiner principal
+      const frag = document.createDocumentFragment();
+
+      // Overlay
+      const ov = document.createElement('div');
+      ov.className = 'premium-overlay';
+      ov.setAttribute('data-premium-overlay','');
+
+      // Wrapper central + conteúdo
+      const wrap = document.createElement('div');
+      wrap.className = 'premium-popup';
+      wrap.setAttribute('role','dialog');
+      wrap.setAttribute('aria-modal','true');
+
+      const content = document.createElement('div');
+      content.className = 'premium-popup__content';
+
+      // Botão fechar
+      const btnClose = document.createElement('button');
+      btnClose.className = 'premium-popup__close';
+      btnClose.setAttribute('aria-label','Fechar');
+      btnClose.innerHTML = '×';
+
+      // Título
+      const h = document.createElement('h3');
+      h.className = 'premium-popup__title';
+      h.textContent = title;
+
+      // Corpo (descrição)
+      const body = document.createElement('div');
+      body.className = 'premium-popup__desc';
+      // Badge simples de plano atual (usa tipografia padrão)
+      const badge = `<p style="margin:0 0 8px 0;font-size:12px;color:var(--grayscale-color-200);">
+        Plano atual: <strong>${(window.CT_USER_PLAN || plan || 'Free')}</strong>
+      </p>`;
+      body.innerHTML = `${badge}${messageHtml}
+        <p class="ct-detail" style="margin-top:8px;font-size:13px;color:var(--text-color-2);">
+          No plano Premium, você remove anúncios, aumenta limites (ex.: 1&nbsp;GB por conversão) e ganha priorização.
+        </p>`;
+
+      // Ações
+      const actions = document.createElement('div');
+      actions.className = 'premium-popup__actions';
+
+      const aPrimary = document.createElement('a');
+      aPrimary.className = 'btn-primary';
+      aPrimary.href = upgradeUrl;
+      aPrimary.innerHTML = `<i class="ph ph-crown" aria-hidden="true"></i> <span>Conheça o plano Premium</span>`;
+
+      const btnGhost = document.createElement('button');
+      btnGhost.type = 'button';
+      btnGhost.className = 'btn-ghost premium-cancel';
+      btnGhost.textContent = 'Agora não';
+
+      actions.appendChild(aPrimary);
+      actions.appendChild(btnGhost);
+
+      // Monta
+      content.appendChild(btnClose);
+      content.appendChild(h);
+      content.appendChild(body);
+      content.appendChild(actions);
+      wrap.appendChild(content);
+
+      // Adiciona no fragment
+      frag.appendChild(ov);
+      frag.appendChild(wrap);
+
+      // Comportamento de fechar
+      const close = () => {
+        document.removeEventListener('keydown', onEsc, true);
+        ov.remove();
+        wrap.remove();
+      };
+      function onEsc(e){ if (e.key === 'Escape') close(); }
+
+      btnClose.addEventListener('click', close);
+      btnGhost.addEventListener('click', close);
+      // Clicar no overlay fecha
+      ov.addEventListener('click', close);
+
+      // Fecha com ESC
+      document.addEventListener('keydown', onEsc, true);
+
+      // Foco inicial no botão primário (acessibilidade)
+      setTimeout(()=>{ aPrimary.focus?.(); }, 0);
+
+      return frag;
+    }
+
+    window.CT.showPremiumModal = function({ plan='free', title='Upgrade necessário', messageHtml='', upgradeUrl } = {}){
+      const frag = buildPremiumModal({
+        plan,
+        title,
+        messageHtml,
+        upgradeUrl: upgradeUrl || window.CT_UPGRADE_URL || '/premium'
+      });
+      document.body.appendChild(frag);
+    };
+  })();
+</script>
+
+<script defer src="{% static 'conversor/js/converter-batch.js' %}"></script>
+<script defer src="{% static 'conversor/js/ads-floating-popup.js' %}"></script>
+{% endblock content %}

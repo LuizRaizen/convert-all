@@ -1,0 +1,209 @@
+/* ==========================================================================
+   Variáveis locais do carrossel
+   - Mantidas as mesmas variáveis e valores padrão
+   ========================================================================== */
+:root{ 
+  --thumb-size:100px;     /* lado da miniatura */
+  --thumb-gap:10px;       /* espaçamento horizontal entre miniaturas */
+}
+
+/* ==========================================================================
+   Carrossel (container)
+   - min-width:0 ajuda quando o pai é flex, evitando overflow forçado
+   ========================================================================== */
+.thumbs-carousel{ 
+  position:relative; 
+  width:100%; 
+  user-select:none; 
+  min-width:0;            /* seguro e só atua em layouts flex */
+}
+
+/* ==========================================================================
+   Viewport (janela visível)
+   - Deve clipear horizontal e permitir rolagem (para setas funcionarem)
+   - Scroll snap para “encaixar” 1 a 1 (compatível com o JS)
+   ========================================================================== */
+.thumbs-viewport{
+  position: relative;
+  width: 100%;
+  overflow-x: auto;        /* overflow real para o track medir por conteúdo */
+  overflow-y: hidden;      /* evita altura elástica */
+  scrollbar-width: none;   /* Firefox: esconde a barra */
+  min-width: 0;            /* evita alongar em pais flex */
+  scroll-snap-type: x mandatory; /* encaixe horizontal */
+  -webkit-overflow-scrolling: touch; /* melhor inércia em iOS */
+  touch-action: pan-x;     /* permite arrastar horizontal no touch */
+}
+/* WebKit: esconde a barra de rolagem */
+.thumbs-viewport::-webkit-scrollbar{ height:0; }
+
+/* ==========================================================================
+   Miniaturas: snap item
+   ========================================================================== */
+.thumb-card{ 
+  scroll-snap-align: start; 
+}
+
+/* ==========================================================================
+   Track (trilho das miniaturas)
+   - width:max-content garante que o track meça pela soma das miniaturas
+   - inline-flex evita “colar” 100% no pai
+   ========================================================================== */
+.thumbs-track{
+  display: inline-flex;    
+  flex-wrap: nowrap;
+  gap: var(--thumb-gap);
+  margin: 0;
+  padding: 0;
+  width: max-content;      
+  scroll-behavior: smooth; /* suaviza o scroll acionado pelas setas */
+}
+/* Respeita preferência do usuário por menos movimento */
+@media (prefers-reduced-motion: reduce){
+  .thumbs-track{ scroll-behavior: auto; }
+}
+
+/* ==========================================================================
+   Setas
+   - .is-visible é controlada via JS (não alterado)
+   - Mantém layout e camadas; adiciona foco acessível
+   ========================================================================== */
+.thumbs-nav{
+  position:absolute; 
+  top:50%; 
+  transform:translateY(-50%);
+  width:36px; 
+  height:36px; 
+  border:none; 
+  border-radius:999px;
+  background:rgba(0,0,0,.55); 
+  color:#fff; 
+  display:grid; 
+  place-items:center;
+  cursor:pointer; 
+  z-index:10; 
+  opacity:0; 
+  pointer-events:none; 
+  transition:opacity .15s ease; /* padroniza easing */
+}
+.thumbs-prev{ left:6px; } 
+.thumbs-next{ right:6px; }
+.thumbs-nav.is-visible{ opacity:1; pointer-events:auto; }
+
+/* Foco visível (acessibilidade), não interfere no JS */
+.thumbs-nav:focus-visible{
+  outline:3px solid rgba(0,110,255,.35);
+  outline-offset:2px;
+}
+
+/* ==========================================================================
+   Miniatura (cartão) – dimensões fixas e borda conforme original
+   ========================================================================== */
+.thumb-card{
+  position:relative;
+  flex: 0 0 var(--thumb-size);     /* largura fixa na linha */
+  width:var(--thumb-size); 
+  height:var(--thumb-size);
+  border:1px solid var(--grayscale-color-100,#d4d4d4);
+  border-radius:10px; 
+  overflow:hidden; 
+  background:#fff;
+}
+.thumb-card img{
+  width:100%; 
+  height:100%; 
+  object-fit:cover; 
+  display:block;
+  position:relative; 
+  z-index:1;
+}
+
+/* ==========================================================================
+   Botão X (remover) – mantém visual e prioridade de camada
+   ========================================================================== */
+.thumb-remove{
+  position:absolute; 
+  top:6px; 
+  right:6px; 
+  width:22px; 
+  height:22px;
+  display:grid; 
+  place-items:center; 
+  border:none; 
+  border-radius:50%;
+  background:rgba(0,0,0,.75); 
+  color:#fff; 
+  cursor:pointer;
+  z-index:3; 
+  font-size:16px; 
+  line-height:1; 
+  font-weight:700;
+  box-shadow: 0 1px 2px rgba(0,0,0,.35);
+}
+/* Foco acessível */
+.thumb-remove:focus-visible{
+  outline:3px solid rgba(0,110,255,.35);
+  outline-offset:2px;
+}
+
+/* ==========================================================================
+   Badge de dimensões (aparece com .show-dims via JS)
+   ========================================================================== */
+.thumb-dims{
+  position:absolute; 
+  left:6px; 
+  top:6px; 
+  background:rgba(255,255,255,.9);
+  color:#111; 
+  font-size:11px; 
+  padding:2px 6px; 
+  border-radius:6px; 
+  display:none; 
+  z-index:2;
+}
+.thumb-card.show-dims .thumb-dims{ display:inline-block; }
+
+/* ==========================================================================
+   Overlay com nome (apenas no hover)
+   - pointer-events:none para não bloquear clique no “x”
+   ========================================================================== */
+.thumb-overlay{
+  position:absolute; 
+  left:0; 
+  right:0; 
+  bottom:0; 
+  padding:6px 8px;
+  font-size:12px; 
+  line-height:1.2; 
+  color:#fff;
+  background:linear-gradient(to top, rgba(0,0,0,.6), rgba(0,0,0,0));
+  opacity:0; 
+  transition:opacity .15s ease; 
+  z-index:2; 
+  pointer-events:none;
+}
+.thumb-card:hover .thumb-overlay{ opacity:1; }
+
+/* ==========================================================================
+   Responsividade
+   - Ajustes finos em telas menores sem mudar o comportamento no desktop
+   - Somente CSS; nenhum seletor/nome alterado
+   ========================================================================== */
+@media (max-width: 768px){
+  :root{
+    --thumb-size: 88px;  /* miniatura um pouco menor */
+    --thumb-gap: 8px;    /* gap levemente reduzido */
+  }
+  .thumbs-nav{ 
+    width:32px; height:32px; 
+  }
+}
+
+@media (max-width: 480px){
+  :root{
+    --thumb-size: 76px;
+    --thumb-gap: 6px;
+  }
+  .thumbs-prev{ left:4px; }
+  .thumbs-next{ right:4px; }
+}

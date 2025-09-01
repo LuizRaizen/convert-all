@@ -1,0 +1,286 @@
+# Playbook Ágil – Multi‑Conversor (MVP em 30 dias)
+
+Este guia é um passo a passo prático para lançar rápido um “hub” de ferramentas de conversão online, começando por **1 conversor** e expandindo de forma iterativa. Pensado para um time de 1 a 2 pessoas.
+
+---
+
+## 1) Fundamentos do Desenvolvimento Ágil (versão direta)
+
+* **Entregas curtas** e frequentes (semanal): valor em produção > documentação extensa.
+* **Feedback real**: medir uso real (métricas), aprender, ajustar backlog.
+* **Escopo flexível**: trave prazo e qualidade; ajuste o “o que” conforme dados.
+* **Qualidade integrada**: testes, CI/CD e observabilidade desde o dia 1.
+
+### Scrum vs Kanban (qual usar?)
+
+* **Scrum “enxuto”** (1 semana/sprint): bom quando há metas semanais claras.
+* **Kanban**: ótimo para fluxo contínuo e quando o escopo muda muito.
+* **Híbrido recomendado**: Sprint semanal **com quadro Kanban** e **WIP Limit**.
+
+### Papéis quando você está solo
+
+* **Product Owner (PO)**: você define prioridade e resultado esperado.
+* **Dev/QA/DevOps**: você executa e lança.
+* **Regra prática**: separe mentalmente “decidir” (PO) de “fazer” (Dev).
+
+---
+
+## 2) Cerimônias (lightweight)
+
+* **Planejamento (30–45 min/semana)**: escolher metas e tarefas da semana.
+* **Daily (5–10 min/dia)**: revisar prioridade e remover bloqueios.
+* **Revisão (20 min)**: validar o que entrou em produção.
+* **Retrospectiva (20 min)**: 1 coisa para continuar, 1 para parar, 1 para começar.
+
+> Dica: agrupe Revisão + Retro no fim de cada semana.
+
+---
+
+## 3) Artefatos e padrões
+
+* **Backlog**: ideias e tarefas priorizadas.
+* **User Story** (modelo):
+
+  * *Como* \<tipo de usuário>
+  * *quero* <resultado>
+  * *para* \<benefício>.
+* **Critérios de Aceite (CA)**: condições objetivas para dizer “pronto”.
+* **Definition of Ready (DoR)**: história clara, CA definidos, estimativa feita, sem dependências externas.
+* **Definition of Done (DoD)**: passou CA, testes automatizados básicos, monitorado, SEO mínimo, acessibilidade AA, LGPD (retenção de arquivos) aplicada.
+
+### Priorizar com ICE (Impacto × Confiança × Esforço)
+
+* Dê notas 0–10.
+* **Impacto**: efeito no KPI (ex.: conversões/dia).
+* **Confiança**: quão certo você está.
+* **Esforço**: horas/dias (inverter sinal ao calcular a pontuação ou padronizar 10/Esforço).
+* Ordene por maior pontuação.
+
+### Estimativa simples
+
+* **T‑shirt size**: XS (≤2h), S (≤0,5d), M (≤1d), L (2–3d), XL (>3d).
+* **Regra de ouro**: quebre tarefas >1 dia.
+
+---
+
+## 4) Métricas que importam (North Star & saúde do fluxo)
+
+* **North Star**: `Conversões concluídas por dia`.
+* **Aquisição**: sessões, CTR (SERP), países.
+* **Ativação**: % usuários que iniciam conversão após ver a página (meta: >35%).
+* **Sucesso**: % jobs concluídos (meta: >90%).
+* **Velocidade**: p50/p95 tempo de processamento.
+* **Receita**: RPM (receita por mil sessões) por país.
+* **Fluxo**: Cycle time (to‑do → done), Throughput/semana, Cumulative Flow Diagram (CFD).
+
+---
+
+## 5) Qualidade desde o início
+
+* **Teste**: unidade (funções), integração (API), e2e simples (fluxo upload→download).
+* **CI/CD**: lint/format, testes, build, deploy automático em *staging*, botão para *prod*.
+* **Segurança**: validação MIME + magic bytes, sandbox de conversão (containers), URLs assinadas (expiração curta), CORS estrito.
+* **LGPD**: política de retenção (apagar artefatos em 24h), logs sem dados sensíveis.
+
+---
+
+## 6) Roadmap de 30 dias (4 sprints de 1 semana)
+
+**Hoje**: contextualizar o MVP e preparar terreno.
+
+### Sprint 0 (Preparação – 3 a 4 dias)
+
+**Objetivo**: base para releases semanais.
+
+* **Produto**: proposta de valor em 1 frase; KPI; nome/domínio.
+* **Tech**: monorepo `web` + `api` + `worker`; Docker; CI/CD mínimo.
+* **Infra**: API + Redis (fila) + S3/MinIO + CDN; logs/métricas (Sentry, Prometheus).
+* **SEO**: sitemap, robots, metas base, i18n habilitado (en/pt‑br/es).
+* **Legal**: Termos/Privacidade; retenção de arquivos.
+
+### Sprint 1 (Conversor #1 – Imagem: JPG ↔ PNG)
+
+**Meta**: lançar página pública com conversão e download.
+
+* **Critérios de Aceite**:
+
+  * Upload drag‑and‑drop, 1–10 arquivos, até 25 MB/arquivo.
+  * Conversão lossless quando aplicável; preserva dimensões.
+  * Progresso por arquivo; falha isolada não interrompe o lote.
+  * Link de download por arquivo e em lote (ZIP). Expira em 15 min.
+  * Exclusão automática do bucket em 24h.
+  * SEO: title/description/FAQ + schema `HowTo`.
+  * A11y AA; LCP < 2,5 s.
+
+### Sprint 2 (Conversor #2 – Compactar PDF)
+
+* **Presets**: Leve, Equilíbrio, Máxima; alvo 30–60% de redução.
+* **Qualidade**: legibilidade mantida; preview de antes/depois opcional.
+
+### Sprint 3 (Conversor #3 – PDF → Word)
+
+* Conversão de texto com preservação básica de formatação.
+* **Fallback OCR** para PDFs escaneados.
+
+### Sprint 4 (I18n + Growth)
+
+* Traduções (en/es) das 3 ferramentas.
+* Blog com 3 tutoriais long‑tail; captação de backlinks; página “All Tools”.
+
+---
+
+## 7) Backlog inicial (priorizado, ICE simplificado)
+
+1. **Página do hub minimalista** (ICE 8) – links para ferramentas; SEO básico.
+2. **Conversor JPG→PNG/PNG→JPG** (ICE 10) – primeiro ganho real.
+3. **Fila Redis + Worker Pillow/ImageMagick** (ICE 9) – estabilidade.
+4. **Armazenamento S3/MinIO + URLs assinadas** (ICE 9) – segurança e custo.
+5. **Compactar PDF (Ghostscript)** (ICE 8) – alto volume.
+6. **PDF→Word (LibreOffice / pdf2docx + OCR opcional)** (ICE 7) – CPM alto.
+7. **I18n (en/es)** (ICE 7) – CPM alto em países alvo.
+8. **Analytics & Métricas** (ICE 7) – gerir crescimento.
+
+---
+
+## 8) Sprint 1 – plano operacional detalhado (JPG ↔ PNG)
+
+### Tarefas (quebrada por área)
+
+**Frontend**
+
+* [ ] Página `/jpg-to-png` e `/png-to-jpg`: dropzone, lista de arquivos, progresso, toasts.
+* [ ] Acessibilidade: labels, foco, ARIA, contraste.
+* [ ] SEO: título, descrição, FAQ de 3 perguntas, schema `HowTo`.
+
+**API**
+
+* [ ] Endpoint `POST /jobs/images/convert` (payload: arquivos, alvo, opções).
+* [ ] `GET /jobs/{id}` (status) + `DELETE /jobs/{id}` (cancelar).
+* [ ] Validações: tamanho, quantidade, tipos.
+
+**Worker**
+
+* [ ] Consumo de job (Redis/RQ).
+* [ ] Conversão com Pillow/ImageMagick; preservação de metadados básicos (dimensão) e escolha de qualidade.
+* [ ] Upload para S3/MinIO; gerar URLs assinadas (15 min).
+* [ ] Limpeza local ao concluir.
+
+**Infra/Segurança**
+
+* [ ] Bucket com lifecycle (expirar em 24h).
+* [ ] Nginx/Proxy + limite de upload; CORS estrito.
+* [ ] Logs estruturados; Sentry e métricas básicas.
+
+**QA**
+
+* [ ] Testes unidade (validação de entrada, mapeamento de formatos).
+* [ ] Teste integração (upload→processo→download).
+* [ ] Teste e2e (navegador): múltiplos arquivos, erro isolado.
+
+### Critérios de Aceite (repetindo como checklist)
+
+* [ ] 1–10 arquivos, até 25 MB cada.
+* [ ] Progresso por arquivo, falhas independentes.
+* [ ] Download individual e em ZIP; URLs expiram em 15 min.
+* [ ] Artefatos e temporários limpos em 24h.
+* [ ] LCP < 2,5 s; A11y AA; SEO com `HowTo`.
+
+### Casos de teste (amostra)
+
+* **Feliz**: 3 JPG (2 MB, 5 MB, 12 MB) → PNG OK (tempo < 4 s/arquivo).
+* **Erro**: arquivo 27 MB → mensagem clara, os outros continuam.
+* **Formato inválido**: `.exe` → bloqueado no front e no back.
+* **Múltiplos**: 10 arquivos simultâneos → fila processa, UI permanece responsiva.
+
+---
+
+## 9) Template de User Story & PR
+
+**User Story**
+
+> Como usuário sem software instalado, quero converter JPG para PNG para publicar imagens com fundo transparente.
+
+**Critérios de Aceite**
+
+* Aceita arrastar 1–10 arquivos (JPG/JPEG), até 25 MB cada.
+* Converte para PNG mantendo dimensões; não piora visivelmente a qualidade.
+* Exibe progresso individual; fornece download individual e em lote (ZIP).
+
+**PR Checklist**
+
+* [ ] Cobertura de testes mínima atingida.
+* [ ] Logs sem dados sensíveis; mensagens de erro amigáveis.
+* [ ] Feature flag (se necessário) e migrações aplicadas.
+* [ ] Documentação atualizada (README/CHANGELOG).
+
+---
+
+## 10) Pipeline e repositório (esqueleto)
+
+```
+/app
+  /web        # Next.js/Vite – SSR/SEO + páginas por ferramenta
+  /api        # FastAPI/Django REST – rotas /jobs, validações
+  /worker     # Python + RQ/Celery – FFmpeg/Pillow/Ghostscript/LibreOffice
+  /infra      # Docker, docker-compose, terraform (VPC, S3, CDN)
+  /docs       # Arquivos do produto: decisões ADR, backlog export, etc.
+```
+
+**Branching**: **Trunk‑based** (main) + feature branches curtas; merges diários.
+**Commits**: Conventional Commits (`feat:`, `fix:`, `chore:`, etc.).
+**Versionamento**: SemVer; releases semanais (ex.: `v0.1.0` → Sprint 1).
+
+---
+
+## 11) Observabilidade e incidentes
+
+* **Métricas**: jobs pendentes, tempo médio p/ processar, erro por tipo.
+* **Alertas**: fila parada, erro >5%, storage quase cheio.
+* **Runbook**:
+
+  1. Checar status do Redis/worker;
+  2. Reprocessar DLQ;
+  3. Escalar workers;
+  4. Pausar upload se fila > N.
+
+---
+
+## 12) SEO e Growth (desde o dia 1)
+
+* **Páginas dedicadas** por conversão com textos originais (não duplicar).
+* **Schema.org** (`HowTo`, `FAQPage`) nas páginas de ferramenta.
+* **Blog** (3 artigos iniciais long‑tail por ferramenta).
+* **I18n**: /en, /es e hreflang corretos.
+* **Backlinks**: diretórios de ferramentas, posts convidados, parcerias.
+
+---
+
+## 13) OKRs para 30 dias (exemplo)
+
+**Objetivo**: Lançar o MVP e provar tração inicial.
+
+* **KR1**: 3 ferramentas ativas em produção (Imagem, Compactar PDF, PDF→Word).
+* **KR2**: 200 conversões concluídas/semana até o dia 30.
+* **KR3**: p95 de processamento < 8 s em todos os conversores.
+* **KR4**: 3 páginas do blog publicadas e indexadas.
+
+---
+
+## 14) Riscos & mitigação
+
+* **Carga alta**: autoscaling por tamanho da fila; limite de upload; fila por prioridade.
+* **Custos**: expiração de artefatos, compressão e storage de baixo custo.
+* **SEO lento**: conteúdo long‑tail, i18n, backlinks desde o mês 1.
+* **Qualidade de arquivo**: presets e testes de regressão visual onde couber.
+
+---
+
+## 15) Próximos passos sugeridos
+
+1. Fechar **escopo da Sprint 1** usando o checklist acima.
+2. Escolher stack (FastAPI ou Django) e subir o **esqueleto do repo**.
+3. Configurar **Redis + MinIO** local com docker‑compose.
+4. Implementar **JPG ↔ PNG** e colocar em *staging*.
+5. Escrever 1 post de blog para a ferramenta (SEO).
+
+> Dica: mantenha cada tarefa com **escopo para no máximo 1 dia**. Se passar disso, quebre em subtarefas.

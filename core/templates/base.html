@@ -1,0 +1,247 @@
+{% load static %} 
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>{% block title %}ConverteTudo — Conversor de Imagens Online (PNG, JPG, WebP, TIFF){% endblock title %}</title>
+
+  {% block meta_description %}
+  <meta name="description" content="Converta imagens online para PNG, JPG/JPEG, WebP, TIFF e mais. Grátis, rápido, com preservação de qualidade e suporte a múltiplos arquivos.">
+  {% endblock meta_description %}
+
+  <meta name="robots" content="index,follow">
+  <link rel="canonical" href="{% if canonical_url %}{{ canonical_url }}{% else %}{{ request.build_absolute_uri }}{% endif %}">
+  <meta name="theme-color" content="#006eff">
+  <meta name="referrer" content="origin-when-cross-origin">
+  <meta name="format-detection" content="telephone=no">
+
+  {% block social %}
+  <meta property="og:site_name" content="ConverteTudo">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="pt_BR">
+  <meta property="og:title" content="{% block og_title %}ConverteTudo — Conversor de Imagens Online{% endblock og_title %}">
+  <meta property="og:description" content="{% block og_description %}Converta PNG, JPG, WebP, TIFF e mais com rapidez e qualidade.{% endblock og_description %}">
+  <meta property="og:url" content="{{ request.build_absolute_uri }}">
+  <meta property="og:image" content="{% if og_image_url %}{{ og_image_url }}{% else %}{% static 'conversor/img/og-default.jpg' %}{% endif %}">
+  <meta property="og:image:alt" content="Conversor de imagens online">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{% block twitter_title %}ConverteTudo — Conversor de Imagens Online{% endblock twitter_title %}">
+  <meta name="twitter:description" content="{% block twitter_description %}Converta imagens para PNG, JPG, WebP e TIFF gratuitamente.{% endblock twitter_description %}">
+  <meta name="twitter:image" content="{% if og_image_url %}{{ og_image_url }}{% else %}{% static 'conversor/img/og-default.jpg' %}{% endif %}">
+  {% endblock social %}
+
+  <link rel="alternate" href="{{ request.build_absolute_uri }}" hreflang="pt-BR">
+  <link rel="alternate" href="{{ request.build_absolute_uri }}" hreflang="x-default">
+
+  <link rel="icon" href="{% static 'conversor/favicon.ico' %}">
+  <link rel="apple-touch-icon" sizes="180x180" href="{% static 'conversor/icons/apple-touch-icon.png' %}">
+  <link rel="icon" type="image/png" sizes="32x32" href="{% static 'conversor/icons/favicon-32x32.png' %}">
+  <link rel="icon" type="image/png" sizes="16x16" href="{% static 'conversor/icons/favicon-16x16.png' %}">
+
+  <link rel="dns-prefetch" href="//cdn.jsdelivr.net">
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+
+  <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/@phosphor-icons/web@2.1.1/src/regular/style.css"/>
+  <link rel="stylesheet" href="{% static 'conversor/css/styles.css' %}?v=1.0.4">
+  <link rel="stylesheet" href="{% static 'conversor/css/miniature-gallery.css' %}?v=1.0.1">
+  <link rel="stylesheet" href="{% static 'conversor/css/modal-select-dir.css' %}?v=1.0.1">
+  {% block head_extra %}{% endblock head_extra %}
+
+  <!-- Structured Data global -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "ConverteTudo",
+    "url": "{{ request.scheme }}://{{ request.get_host }}/",
+    "logo": "{% static 'conversor/icons/android-chrome-192x192.png' %}"
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "ConverteTudo",
+    "url": "{{ request.scheme }}://{{ request.get_host }}/"
+  }
+  </script>
+
+  <!-- SiteNavigationElement (ajuda entendimento da navegação pelos buscadores) -->
+  <script type="application/ld+json">
+  {
+    "@context":"https://schema.org",
+    "@type":"SiteNavigationElement",
+    "name":["Conversor de Imagens","Removedor de Fundo","Conversor de Documentos","Conversor de Áudio","Conversor de Vídeo"],
+    "url":[
+      "{{ request.scheme }}://{{ request.get_host }}/conversor-de-imagens/",
+      "{{ request.scheme }}://{{ request.get_host }}/removedor-de-fundo/",
+      "{{ request.scheme }}://{{ request.get_host }}/conversor-de-documentos/",
+      "{{ request.scheme }}://{{ request.get_host }}/conversor-de-audio/",
+      "{{ request.scheme }}://{{ request.get_host }}/conversor-de-video/"
+    ]
+  }
+  </script>
+
+  {% block structured_data_extra %}{% endblock structured_data_extra %}
+</head>
+
+<body>
+  <!-- ===== Header / Navbar ===== -->
+  <header class="site-header" role="banner">
+    <div class="navbar">
+      <div class="navbar__inner">
+        <a class="navbar__brand" href="/" aria-label="Página inicial — ConverteTudo">
+          <img class="navbar__logo" src="{% static 'conversor/icons/favicon-32x32.png' %}" alt="" width="24" height="24" loading="eager">
+          <span class="navbar__brand-text">ConverteTudo</span>
+        </a>
+
+        <!-- Toggle (mobile) -->
+        <input type="checkbox" id="nav-toggle" class="navbar__toggle" aria-hidden="true">
+        <label for="nav-toggle" class="navbar__burger" aria-label="Abrir menu" role="button">
+          <span></span><span></span><span></span>
+        </label>
+
+        <nav class="navbar__menu" aria-label="Ferramentas">
+          <ul>
+            <!-- Use  se já tiver nomes de rotas -->
+            <li><a href="/conversor-de-imagens/"  title="Converter imagens: PNG, JPG/JPEG, WebP, TIFF">Conversor de Imagens</a></li>
+            <li><a href="/removedor-de-fundo/"    title="Remover fundo de imagem automaticamente">Removedor de Fundo</a></li>
+            <li><a href="/conversor-de-documentos/" title="Converter documentos: PDF, DOCX, PPTX, TXT e mais">Conversor de Documentos</a></li>
+            <li><a href="/conversor-de-audio/"    title="Converter áudio: MP3, WAV, AAC, FLAC, OGG">Conversor de Áudio</a></li>
+            <li><a href="/conversor-de-video/"    title="Converter vídeo: MP4, WEBM, AVI, MOV, MKV">Conversor de Vídeo</a></li>
+          </ul>
+        </nav>
+
+        <!-- Settings (tema + idioma) -->
+        <div class="settings" data-settings>
+          <button class="settings__btn" type="button" aria-haspopup="true" aria-expanded="false" aria-controls="settings-menu" title="Configurações" data-settings-btn>
+            <i class="ph ph-gear"></i>
+          </button>
+
+          <div class="settings__menu" id="settings-menu" role="menu" aria-label="Configurações">
+            <div class="settings__group" role="none">
+              <div class="settings__title">Aparência</div>
+              <div class="settings__row" role="menuitem">
+                <span class="settings__label">
+                  <i class="ph ph-moon-stars" aria-hidden="true"></i>
+                  Modo escuro
+                </span>
+                <label class="switch" aria-label="Alternar modo escuro">
+                  <input type="checkbox" data-theme-toggle>
+                  <span class="switch__track"><span class="switch__thumb"></span></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="settings__group" role="none">
+              <div class="settings__title">Idioma</div>
+              <div class="lang-list" role="group" aria-label="Selecionar idioma">
+                <!-- Ajuste os hrefs conforme sua estratégia de i18n -->
+                <a href="?lang=pt-BR" data-lang="pt-BR" title="Português (Brasil)">
+                  <img src="{% static 'conversor/flags/br.svg' %}" alt="" aria-hidden="true"> Português
+                </a>
+                <a href="?lang=en-US" data-lang="en-US" title="English (US)">
+                  <img src="{% static 'conversor/flags/us.svg' %}" alt="" aria-hidden="true"> English
+                </a>
+                <a href="?lang=es-ES" data-lang="es-ES" title="Español (ES)">
+                  <img src="{% static 'conversor/flags/es.svg' %}" alt="" aria-hidden="true"> Español
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </header>
+
+  <main id="main-content">
+    {% block content %}{% endblock content %}
+  </main>
+
+  <footer class="container">
+    <p>&copy; Luiz R. Dererita — Todos os Direitos Reservados, 2025</p>
+  </footer>
+
+  {% block scripts_end %}{% endblock scripts_end %}
+  <script>
+    (function(){
+      const root = document.documentElement; // <html>
+      const btn = document.querySelector('[data-settings-btn]');
+      const menuWrap = document.querySelector('[data-settings]');
+      const menu = document.getElementById('settings-menu');
+      const themeToggle = document.querySelector('[data-theme-toggle]');
+      const metaTheme = document.querySelector('meta[name="theme-color"]');
+
+      // ====== Tema: carregar preferido ======
+      const LS_KEY = 'ct_theme';
+      const stored = localStorage.getItem(LS_KEY);
+
+      function applyTheme(mode){ // 'dark' | 'light'
+        if(mode === 'dark'){
+          root.setAttribute('data-theme', 'dark');
+          themeToggle && (themeToggle.checked = true);
+          metaTheme && metaTheme.setAttribute('content', '#0c0f14');
+        }else{
+          root.setAttribute('data-theme', 'light');
+          themeToggle && (themeToggle.checked = false);
+          metaTheme && metaTheme.setAttribute('content', '#006eff');
+        }
+      }
+
+      if(stored === 'dark' || stored === 'light'){
+        applyTheme(stored);
+      }else{
+        // Sem preferência salva: respeita o sistema (se for dark, aplica; senão, light)
+        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        applyTheme(prefersDark ? 'dark' : 'light');
+      }
+
+      // Toggle
+      themeToggle && themeToggle.addEventListener('change', (e)=>{
+        const mode = e.target.checked ? 'dark' : 'light';
+        localStorage.setItem(LS_KEY, mode);
+        applyTheme(mode);
+      });
+
+      // ====== Menu de Configurações (abrir/fechar, acessibilidade) ======
+      function openMenu(){
+        menuWrap.classList.add('is-open');
+        btn.setAttribute('aria-expanded', 'true');
+        // foco gerenciável se quiser: menu.focus();
+      }
+      function closeMenu(){
+        menuWrap.classList.remove('is-open');
+        btn.setAttribute('aria-expanded', 'false');
+      }
+      btn && btn.addEventListener('click', (e)=>{
+        e.stopPropagation();
+        if(menuWrap.classList.contains('is-open')) closeMenu(); else openMenu();
+      });
+
+      // Fecha ao clicar fora
+      document.addEventListener('click', (e)=>{
+        if(!menuWrap.contains(e.target)) closeMenu();
+      });
+
+      // Fecha com ESC
+      document.addEventListener('keydown', (e)=>{
+        if(e.key === 'Escape') closeMenu();
+      });
+
+      // ====== Idioma (opcional: manter na mesma rota com query param) ======
+      // Se você usar Django i18n, substitua esses links por um POST no set_language.
+      document.querySelectorAll('.lang-list a').forEach(a=>{
+        a.addEventListener('click', ()=>{
+          // Pode salvar preferência local (opcional)
+          localStorage.setItem('ct_lang', a.dataset.lang);
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

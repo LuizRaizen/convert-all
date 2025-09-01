@@ -1,0 +1,59 @@
+converta/                       # raiz do repositório
+├── manage.py
+├── pyproject.toml / requirements.txt
+├── .env                        # variáveis seguras (DEBUG, SECRET_KEY, etc.)
+├── docker/                     # (opcional) arquivos de deploy
+│   ├── web.Dockerfile
+│   ├── worker.Dockerfile
+│   └── nginx.conf
+├── media/                      # uploads temporários e resultados (se filesystem)
+├── static/                     # assets coletados (collectstatic)
+├── locale/                     # strings traduzidas (.po/.mo)
+├── converta/                   # pacote do projeto
+│   ├── __init__.py
+│   ├── asgi.py
+│   ├── wsgi.py
+│   ├── settings/
+│   │   ├── __init__.py        # importa Base + overrides (Dev/Prod)
+│   │   ├── base.py
+│   │   ├── dev.py
+│   │   └── prod.py
+│   ├── urls.py
+│   └── i18n_urls.py            # (se preferir separar rotas i18n)
+├── core/                       # app “cross-cutting”
+│   ├── __init__.py
+│   ├── apps.py
+│   ├── context_processors.py   # hreflang, idioma atual, live-stats demo vs real
+│   ├── middleware.py           # (ex: idioma por subpath, CSP, ratelimit headers)
+│   ├── sitemaps.py             # sitemaps por idioma/ferramenta
+│   ├── templatetags/
+│   │   └── i18n_links.py       # gerar URLs de troca de idioma preservando rota
+│   ├── services/storage.py     # abstração de storage (filesystem/S3/GCS)
+│   ├── services/cleanup.py     # cleanup de arquivos temporários
+│   ├── views.py                # home/landing multilíngue
+│   └── templates/
+│       ├── base.html           # layout global + language switch
+│       └── core/
+│           └── home.html
+├── tools/                      # “namespace” para as ferramentas
+│   ├── __init__.py
+│   ├── images/                 # Conversor de Imagens
+│   │   ├── apps.py
+│   │   ├── urls.py
+│   │   ├── views.py
+│   │   ├── forms.py
+│   │   ├── services.py         # Pillow/ImageMagick “sync”
+│   │   ├── tasks.py            # Celery (lote/pesado)
+│   │   └── templates/tools/images/
+│   │       └── index.html
+│   ├── bgremove/               # Removedor de Fundo
+│   │   ├── ...
+│   ├── documents/              # Conversor de Documentos (LibreOffice/Unoconv)
+│   │   ├── ...
+│   ├── audio/                  # Conversor de Áudio (ffmpeg)
+│   │   ├── ...
+│   └── video/                  # Conversor de Vídeo (ffmpeg/yt-dlp*)
+│       ├── ...
+└── worker/                     # configuração Celery separada
+    ├── __init__.py
+    └── celery.py

@@ -1068,7 +1068,7 @@ body[data-theme="dark"] .switch__thumb{
   background: var(--main-color-light-hover);
   color: var(--main-color-hover);
 }
-.lang-list img{ width:18px; height:18px; display:inline-block; border-radius:3px; }
+.lang-list img{ width:22px; height:18px; display:inline-block; border-radius:3px; }
 
 /* Acessibilidade foco visível no menu */
 .settings__btn:focus-visible,
